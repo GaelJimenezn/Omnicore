@@ -1,0 +1,34 @@
+<svg width="400" height="150" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo transparente (quítalo si no lo necesitas, aquí está en Slate-900 para que lo visualices) -->
+  <rect width="100%" height="100%" fill="#0f172a" rx="12"/>
+  
+  <!-- Símbolo del Hexágono (El Hub) -->
+  <g transform="translate(30, 35)">
+    <!-- Hexágono exterior con gradiente -->
+    <path d="M40 0 L74.64 20 L74.64 60 L40 80 L5.36 60 L5.36 20 Z" fill="none" stroke="url(#neon-grad)" stroke-width="6" stroke-linejoin="round"/>
+    
+    <!-- Núcleo central -->
+    <circle cx="40" cy="40" r="12" fill="#00e5ff"/>
+    
+    <!-- Líneas de conexión (Películas, Series, Juegos) -->
+    <path d="M40 0 L40 80 M5.36 20 L74.64 60 M5.36 60 L74.64 20" stroke="#00e5ff" stroke-width="2" opacity="0.6"/>
+  </g>
+  
+  <!-- Tipografía Principal -->
+  <text x="130" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#ffffff" letter-spacing="-1">
+    Omni<tspan fill="#00e5ff">Hub</tspan>
+  </text>
+  
+  <!-- Subtítulo de tu Arquitectura -->
+  <text x="135" y="110" font-family="monospace" font-size="12" font-weight="600" fill="#94a3b8" letter-spacing="4">
+    POWERED BY TSG_IM
+  </text>
+  
+  <!-- Definición del gradiente neón -->
+  <defs>
+    <linearGradient id="neon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:1" /> <!-- Cyan -->
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" /> <!-- Morado Tailwind -->
+    </linearGradient>
+  </defs>
+</svg>

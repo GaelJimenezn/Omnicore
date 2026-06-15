@@ -7,6 +7,7 @@ export interface MediaItem {
   backdrop: string;
   overview: string;
   type: 'movie' | 'tv' | 'game';
+  rating?: number;
 }
 
 export class MediaService {

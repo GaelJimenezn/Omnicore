@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --color-omni-dark: #0B0F19;
-  --color-omni-panel: #1A202C;
-  --color-omni-hover: #2D3748;
-  --color-omni-accent: #00D1FF;
-  --color-omni-accentHover: #00A3CC;
-  --color-omni-text: #E2E8F0;
-  --color-omni-textMuted: #A0AEC0;
+  --color-omni-dark: #05050A;
+  --color-omni-panel: #10121A;
+  --color-omni-hover: #1E2333;
+  --color-omni-accent: #00F0FF;
+  --color-omni-accentHover: #00C2CC;
+  --color-omni-secondary: #7000FF;
+  --color-omni-text: #F8FAFC;
+  --color-omni-textMuted: #94A3B8;
   
   --font-sans: 'Inter', system-ui, sans-serif;
   
-  --animate-fade-in: fadeIn 0.3s ease-out;
-  --animate-slide-in-right: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+  --animate-slide-in-right: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-up: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-pulse-slow: pulseSlow 3s infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
   
   @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
   }
   @keyframes slideInRight {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(0); }
+    0% { transform: translateX(100px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideUp {
+    0% { transform: translateY(40px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes pulseSlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(0,240,255,0.2); }
+    100% { box-shadow: 0 0 25px rgba(0,240,255,0.8), 0 0 10px rgba(112,0,255,0.5); }
   }
 }
 
@@ -31,37 +47,49 @@
 }
 
 @layer components {
-  /* Scrollbar personalizado, estilo Playnite/Aniki */
+  /* Scrollbar personalizado */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-omni-dark;
+    @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
     @apply bg-omni-hover rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-omni-textMuted;
+    @apply bg-omni-accent;
+  }
+
+  /* Glassmorphism Panels */
+  .glass-panel {
+    @apply bg-omni-panel/60 backdrop-blur-xl border border-white/5;
   }
 
   /* Efectos de tarjeta (Grid Item) */
   .media-card {
-    @apply relative overflow-hidden rounded-xl bg-omni-panel cursor-pointer shadow-lg transition-all duration-300 transform;
+    @apply relative overflow-hidden rounded-2xl bg-omni-panel cursor-pointer transition-all duration-500 transform;
+  }
+  .media-card::before {
+    content: '';
+    @apply absolute inset-0 border-2 border-transparent rounded-2xl transition-colors duration-500 z-20 pointer-events-none;
+  }
+  .media-card:hover::before {
+    @apply border-omni-accent;
   }
   .media-card:hover {
-    @apply shadow-2xl scale-[1.02];
-    box-shadow: 0 0 15px rgba(0, 209, 255, 0.4);
+    @apply shadow-2xl scale-[1.05] -translate-y-2 z-10;
+    box-shadow: 0 20px 40px -10px rgba(0, 240, 255, 0.3), 0 0 20px rgba(112, 0, 255, 0.2);
   }
   .media-card img {
-    @apply w-full h-full object-cover transition-transform duration-500;
+    @apply w-full h-full object-cover transition-transform duration-700 ease-out;
   }
   .media-card:hover img {
     @apply scale-110;
   }
   .media-card-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-omni-dark via-transparent to-transparent opacity-80 transition-opacity duration-300;
+    @apply absolute inset-0 bg-gradient-to-t from-[#05050A] via-[#05050A]/60 to-transparent opacity-0 transition-opacity duration-500 z-10 flex flex-col justify-end p-5;
   }
   .media-card:hover .media-card-overlay {
     @apply opacity-100;
@@ -69,11 +97,17 @@
   
   /* Botones Glow */
   .btn-glow {
-    @apply px-6 py-2 rounded-lg font-bold transition-all duration-300 bg-omni-accent text-omni-dark;
-    box-shadow: 0 0 10px rgba(0,209,255,0.5);
+    @apply relative px-8 py-3 rounded-xl font-bold transition-all duration-300 bg-omni-accent text-omni-dark overflow-hidden z-10;
+  }
+  .btn-glow::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-omni-accent to-omni-secondary opacity-0 transition-opacity duration-300 -z-10;
+  }
+  .btn-glow:hover::before {
+    @apply opacity-100;
   }
   .btn-glow:hover {
-    @apply bg-omni-accentHover scale-105;
-    box-shadow: 0 0 20px rgba(0,209,255,0.8);
+    @apply text-white scale-105;
+    box-shadow: 0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(112,0,255,0.4);
   }
 }

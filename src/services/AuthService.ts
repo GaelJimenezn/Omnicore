@@ -1,6 +1,6 @@
 import { 
-  signInWithPopup, 
-  GoogleAuthProvider, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut, 
   onAuthStateChanged,
   type User 
@@ -11,10 +11,14 @@ import { router } from '../core/Router';
 
 export class AuthService {
   private static instance: AuthService;
-  private provider: GoogleAuthProvider;
+  private mockUser: any = { 
+    uid: 'mock-123',
+    email: 'admin@omnihub.app',
+    displayName: 'admin', 
+    photoURL: 'https://ui-avatars.com/api/?name=admin&background=00D1FF&color=0B0F19' 
+  };
 
   private constructor() {
-    this.provider = new GoogleAuthProvider();
     this.initListener();
   }
 
@@ -26,29 +30,82 @@ export class AuthService {
   }
 
   private initListener() {
-    onAuthStateChanged(auth, (user: User | null) => {
-      appStore.set({ user, isLoading: false });
-      if (!user && window.location.pathname !== '/login') {
-        router.navigate('/login');
-      } else if (user && window.location.pathname === '/login') {
-        router.navigate('/');
-      }
-    });
+    if (auth) {
+      onAuthStateChanged(auth, (user: User | null) => {
+        this.handleUserState(user);
+      });
+    } else {
+      // Mock mode
+      setTimeout(() => {
+        this.handleUserState(this.mockUser);
+      }, 500);
+    }
   }
 
-  async loginWithGoogle() {
+  private isInitialized = false;
+
+  private handleUserState(user: any) {
+    appStore.set({ user, isLoading: false });
+    if (!user && window.location.pathname !== '/login') {
+      router.navigate('/login');
+    } else if (user && window.location.pathname === '/login') {
+      router.navigate('/');
+    } else if (!this.isInitialized) {
+      router.init();
+    }
+    this.isInitialized = true;
+  }
+
+  async login(email: string, pass: string) {
+    appStore.set({ isLoading: true });
     try {
-      appStore.set({ isLoading: true });
-      await signInWithPopup(auth, this.provider);
-    } catch (error) {
+      if (auth) {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } else {
+        // Mock Login
+        setTimeout(() => {
+          this.mockUser = { 
+            uid: 'mock-123',
+            email,
+            displayName: email.split('@')[0], 
+            photoURL: `https://ui-avatars.com/api/?name=${email.split('@')[0]}&background=00D1FF&color=0B0F19` 
+          };
+          this.handleUserState(this.mockUser);
+        }, 800);
+      }
+    } catch (error: any) {
       console.error('Error logging in', error);
+      // Fallback: If user not found, register them (useful for demo/private setup)
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        this.register(email, pass);
+      } else {
+        appStore.set({ isLoading: false });
+        alert('Error de acceso: ' + error.message);
+      }
+    }
+  }
+
+  async register(email: string, pass: string) {
+    try {
+      if (auth) {
+        await createUserWithEmailAndPassword(auth, email, pass);
+      }
+      // state will be handled by listener
+    } catch (error: any) {
+      console.error('Error registering', error);
       appStore.set({ isLoading: false });
+      alert('Error de registro: ' + error.message);
     }
   }
 
   async logout() {
     try {
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      } else {
+        this.mockUser = null;
+        this.handleUserState(null);
+      }
     } catch (error) {
       console.error('Error logging out', error);
     }

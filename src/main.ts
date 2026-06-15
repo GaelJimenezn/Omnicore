@@ -7,6 +7,8 @@ import { PlaylistsView } from './views/PlaylistsView';
 // authService is initialized on import
 router.addRoute({ path: '/login', view: LoginView, requiresAuth: false });
 router.addRoute({ path: '/playlists', view: PlaylistsView, requiresAuth: true });
+router.addRoute({ path: '/anime', view: LibraryHub, requiresAuth: true });
+router.addRoute({ path: '/manga', view: LibraryHub, requiresAuth: true });
 router.addRoute({ path: '/', view: LibraryHub, requiresAuth: true });
 router.addRoute({ path: '*', view: LibraryHub, requiresAuth: true });
 

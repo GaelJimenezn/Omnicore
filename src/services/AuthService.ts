@@ -9,6 +9,10 @@ import { auth } from '../core/firebase.config';
 import { appStore } from '../core/Store';
 import { router } from '../core/Router';
 
+/**
+ * AuthService
+ * Handles authentication logic via Firebase or mock mode.
+ */
 export class AuthService {
   private static instance: AuthService;
   private mockUser: any = { 
@@ -29,6 +33,17 @@ export class AuthService {
     return AuthService.instance;
   }
 
+  /**
+   * Gets the currently authenticated user from the store.
+   * @returns {any} The current user object or null.
+   */
+  public get currentUser() {
+    return appStore.get().user;
+  }
+
+  /**
+   * Initializes the authentication listener.
+   */
   private initListener() {
     if (auth) {
       onAuthStateChanged(auth, (user: User | null) => {

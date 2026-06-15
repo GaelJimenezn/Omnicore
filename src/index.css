@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-omni-dark: #0B0F19;
+  --color-omni-panel: #1A202C;
+  --color-omni-hover: #2D3748;
+  --color-omni-accent: #00D1FF;
+  --color-omni-accentHover: #00A3CC;
+  --color-omni-text: #E2E8F0;
+  --color-omni-textMuted: #A0AEC0;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-in-right: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes slideInRight {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(0); }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-omni-dark text-omni-text font-sans antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  /* Scrollbar personalizado, estilo Playnite/Aniki */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-omni-dark;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-omni-hover rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-omni-textMuted;
+  }
+
+  /* Efectos de tarjeta (Grid Item) */
+  .media-card {
+    @apply relative overflow-hidden rounded-xl bg-omni-panel cursor-pointer shadow-lg transition-all duration-300 transform;
+  }
+  .media-card:hover {
+    @apply shadow-2xl scale-[1.02];
+    box-shadow: 0 0 15px rgba(0, 209, 255, 0.4);
+  }
+  .media-card img {
+    @apply w-full h-full object-cover transition-transform duration-500;
+  }
+  .media-card:hover img {
+    @apply scale-110;
+  }
+  .media-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-omni-dark via-transparent to-transparent opacity-80 transition-opacity duration-300;
+  }
+  .media-card:hover .media-card-overlay {
+    @apply opacity-100;
+  }
+  
+  /* Botones Glow */
+  .btn-glow {
+    @apply px-6 py-2 rounded-lg font-bold transition-all duration-300 bg-omni-accent text-omni-dark;
+    box-shadow: 0 0 10px rgba(0,209,255,0.5);
+  }
+  .btn-glow:hover {
+    @apply bg-omni-accentHover scale-105;
+    box-shadow: 0 0 20px rgba(0,209,255,0.8);
+  }
+}

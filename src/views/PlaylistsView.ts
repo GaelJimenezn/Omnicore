@@ -1,5 +1,6 @@
 import { navbar } from '../components/Navbar';
 import { listService, type Playlist } from '../services/ListService';
+import { mediaDrawer } from '../components/MediaDrawer';
 
 export class PlaylistsView {
   private lists: Playlist[] = [];
@@ -243,6 +244,15 @@ export class PlaylistsView {
     container.querySelectorAll('div[draggable="true"]').forEach(el => {
       const element = el as HTMLElement;
       
+      // Click to open detailed view
+      element.addEventListener('click', () => {
+        // Prevent click if we are dragging
+        if (element.classList.contains('opacity-50')) return;
+        const itemId = element.getAttribute('data-item-id');
+        const mediaItem = list.items.find(i => i.id === Number(itemId));
+        if (mediaItem) mediaDrawer.open(mediaItem);
+      });
+
       element.addEventListener('dragstart', (e) => {
         draggedEl = element;
         element.classList.add('opacity-50', 'border-omni-secondary');

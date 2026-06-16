@@ -9,8 +9,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // En desarrollo, redirige /api a un emulador local o directamente
-      // Vercel serverless functions en dev normalmente se manejan con `vercel dev`
+      '/steamgriddb-api': {
+        target: 'https://www.steamgriddb.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/steamgriddb-api/, '/api/v2')
+      }
     }
   }
 });

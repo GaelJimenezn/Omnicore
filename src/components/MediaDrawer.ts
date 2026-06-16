@@ -88,23 +88,32 @@ export class MediaDrawer {
             <span id="genre-ph"></span>
           </div>
 
-          <p class="text-white/70 text-base md:text-lg leading-relaxed max-w-3xl mb-10 drop-shadow-md">${overview || 'No overview available.'}</p>
+          <p id="media-overview" class="text-white/70 text-base md:text-lg leading-relaxed max-w-3xl mb-10 drop-shadow-md">${overview || 'No overview available.'}</p>
 
           <div class="flex flex-wrap items-center gap-4">
-            <button id="play-btn" class="bg-white text-black px-8 py-3.5 rounded-full font-bold flex items-center gap-2 hover:bg-white/90 transition-transform hover:scale-105 active:scale-95">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-              Play
-            </button>
+            ${this.currentItem.type === 'game' ? `
+              <button id="play-btn" class="bg-omni-secondary text-white px-8 py-3.5 rounded-full font-bold flex items-center gap-2 hover:brightness-110 transition-transform hover:scale-105 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Descargar
+              </button>
+            ` : `
+              <button id="play-btn" class="bg-white text-black px-8 py-3.5 rounded-full font-bold flex items-center gap-2 hover:bg-white/90 transition-transform hover:scale-105 active:scale-95">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                Reproducir
+              </button>
+            `}
             <button class="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             </button>
+            ${this.currentItem.type !== 'game' ? `
             <button class="px-6 py-3 rounded-full border border-white/20 bg-white/5 flex items-center gap-2 text-white hover:bg-white/10 transition-colors font-medium">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-              Download
+              Descargar
             </button>
+            ` : ''}
             <button class="px-6 py-3 rounded-full border border-white/20 bg-white/5 flex items-center gap-2 text-white hover:bg-white/10 transition-colors font-medium">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-              Similars
+              Similares
             </button>
           </div>
         </div>
@@ -134,6 +143,14 @@ export class MediaDrawer {
           const playerContainer = document.getElementById('player-container');
           
           if (playerContainer) {
+            if (streamUrl === '#') {
+              playBtn.innerHTML = 'No disponible';
+              setTimeout(() => {
+                playBtn.innerHTML = this.currentItem?.type === 'game' ? 'Descargar' : 'Reproducir';
+                playBtn.removeAttribute('disabled');
+              }, 2000);
+              return;
+            }
             playerContainer.classList.remove('hidden');
             playerContainer.classList.add('animate-fade-in');
             playerContainer.innerHTML = `
@@ -180,6 +197,12 @@ export class MediaDrawer {
       if (ph) ph.outerHTML = `<span>·</span><span>${details.genre}</span>`;
     }
 
+    if (details.overview) {
+      const overviewEl = document.getElementById('media-overview');
+      if (overviewEl) overviewEl.textContent = details.overview;
+      this.currentItem.overview = details.overview; // Cache it
+    }
+
     let html = '';
     
     // ACTORS GRID (CIENBY STYLE)
@@ -188,7 +211,7 @@ export class MediaDrawer {
         <div class="mb-12">
           <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
             <div class="w-1 h-6 bg-red-600 rounded-sm"></div>
-            Actors
+            Actores
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             ${details.cast.map(c => `
@@ -205,24 +228,7 @@ export class MediaDrawer {
       `;
     }
 
-    // PROVIDERS
-    if (details.providers.length > 0) {
-      html += `
-        <div class="mb-12">
-          <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-            <div class="w-1 h-6 bg-red-600 rounded-sm"></div>
-            Disponible en
-          </h3>
-          <div class="flex gap-4 flex-wrap">
-            ${details.providers.map(p => `
-              <div class="flex flex-col items-center gap-2 transition-transform hover:scale-105" title="${p.provider_name}">
-                <img src="${p.logo_path}" alt="${p.provider_name}" class="w-14 h-14 rounded-xl shadow-lg border border-white/10" />
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
+
 
     if (!html) {
       detailsContainer.innerHTML = '';

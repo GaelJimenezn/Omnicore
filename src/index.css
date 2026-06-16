@@ -62,6 +62,15 @@
     @apply bg-omni-accent;
   }
 
+  /* Ocultar scrollbar pero mantener scroll */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Glassmorphism Panels */
   .glass-panel {
     @apply bg-omni-panel/60 backdrop-blur-xl border border-white/5;

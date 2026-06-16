@@ -6,7 +6,8 @@ import { heroSection } from '../components/HeroSection';
 export class LibraryHub {
   render() {
     const path = window.location.pathname;
-    const showMovies = path === '/' || path === '/movies' || path === '/series';
+    const showMovies = path === '/' || path === '/movies';
+    const showSeries = path === '/' || path === '/series';
     const showGames = path === '/' || path === '/games';
     const showAnime = path === '/' || path === '/anime';
     const showManga = path === '/' || path === '/manga';
@@ -29,13 +30,13 @@ export class LibraryHub {
           
           <header class="flex justify-between items-end mb-12 animate-slide-in-right">
             <div>
-              <h2 class="text-omni-accent font-black tracking-[0.2em] uppercase text-sm mb-2 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">Nexus Access Granted</h2>
+              <h2 class="text-omni-accent font-black tracking-[0.2em] uppercase text-sm mb-2 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">Omnicore Access Granted</h2>
               <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-md">${title}</h1>
             </div>
             <div class="flex items-center gap-4">
               <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-sm text-omni-textMuted hover:text-white transition-colors cursor-text">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <span>Buscar en el Nexus...</span>
+                <span>Buscar en Omnicore...</span>
               </div>
             </div>
           </header>
@@ -44,59 +45,141 @@ export class LibraryHub {
 
           ${showMovies ? `
           <section class="mb-16 relative z-10 animate-fade-in">
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
                 <div class="w-2 h-8 bg-omni-accent rounded-full shadow-[0_0_10px_rgba(0,240,255,0.8)]"></div>
-                Películas & Series Top
+                ${path === '/' ? 'Películas Top' : 'Películas'}
               </h2>
-              <a href="#" class="text-sm font-bold text-omni-accent hover:text-white transition-colors uppercase tracking-widest">Ver todo</a>
+              ${path === '/' ? `
+              <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                  <button id="left-btn-movies" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-omni-accent/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <button id="right-btn-movies" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-omni-accent/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+                <a href="/movies" data-nav-link="true" class="text-sm font-bold text-omni-accent hover:text-white transition-colors uppercase tracking-widest hidden sm:block">Ver todo</a>
+              </div>
+              ` : ''}
             </div>
-            <!-- Horizontal scrolling row -->
-            <div id="movies-grid" class="flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x">
-              <div class="text-center text-omni-textMuted py-12 w-full animate-pulse">Cargando datos de la red...</div>
+            <div class="relative">
+              <div id="movies-grid" class="${path === '/' ? 'flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x scroll-smooth hide-scrollbar' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-6 pt-4'}">
+                <div class="text-center text-omni-textMuted py-12 w-full animate-pulse col-span-full">Cargando datos de la red...</div>
+              </div>
+            </div>
+          </section>` : ''}
+
+          ${showSeries ? `
+          <section class="mb-16 relative z-10 animate-fade-in">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
+                <div class="w-2 h-8 bg-[#00f0ff] rounded-full shadow-[0_0_10px_rgba(0,240,255,0.8)]"></div>
+                ${path === '/' ? 'Series Top' : 'Series'}
+              </h2>
+              ${path === '/' ? `
+              <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                  <button id="left-btn-series" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-[#00f0ff]/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <button id="right-btn-series" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-[#00f0ff]/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+                <a href="/series" data-nav-link="true" class="text-sm font-bold text-[#00f0ff] hover:text-white transition-colors uppercase tracking-widest hidden sm:block">Ver todo</a>
+              </div>
+              ` : ''}
+            </div>
+            <div class="relative">
+              <div id="series-grid" class="${path === '/' ? 'flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x scroll-smooth hide-scrollbar' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-6 pt-4'}">
+                <div class="text-center text-omni-textMuted py-12 w-full animate-pulse col-span-full">Cargando series...</div>
+              </div>
             </div>
           </section>` : ''}
 
           ${showGames ? `
           <section class="relative z-10 mb-16 animate-fade-in">
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
                 <div class="w-2 h-8 bg-omni-secondary rounded-full shadow-[0_0_10px_rgba(112,0,255,0.8)]"></div>
                 Videojuegos Populares
               </h2>
-              <a href="#" class="text-sm font-bold text-omni-secondary hover:text-white transition-colors uppercase tracking-widest">Explorar</a>
+              ${path === '/' ? `
+              <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                  <button id="left-btn-games" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-omni-secondary/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <button id="right-btn-games" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-omni-secondary/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+                <a href="/games" data-nav-link="true" class="text-sm font-bold text-omni-secondary hover:text-white transition-colors uppercase tracking-widest hidden sm:block">Explorar</a>
+              </div>
+              ` : ''}
             </div>
-            <!-- Horizontal scrolling row -->
-            <div id="games-grid" class="flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x">
-              <div class="text-center text-omni-textMuted py-12 w-full animate-pulse">Sincronizando...</div>
+            <div class="relative">
+              <div id="games-grid" class="${path === '/' ? 'flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x scroll-smooth hide-scrollbar' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-6 pt-4'}">
+                <div class="text-center text-omni-textMuted py-12 w-full animate-pulse col-span-full">Sincronizando...</div>
+              </div>
             </div>
           </section>` : ''}
 
           ${showAnime ? `
           <section class="relative z-10 mb-16 animate-fade-in">
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
                 <div class="w-2 h-8 bg-pink-500 rounded-full shadow-[0_0_10px_rgba(236,72,153,0.8)]"></div>
-                Anime & Donghuas en Tendencia
+                Anime & Donghuas
               </h2>
-              <a href="#" class="text-sm font-bold text-pink-500 hover:text-white transition-colors uppercase tracking-widest">Explorar</a>
+              ${path === '/' ? `
+              <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                  <button id="left-btn-anime" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-pink-500/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <button id="right-btn-anime" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-pink-500/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+                <a href="/anime" data-nav-link="true" class="text-sm font-bold text-pink-500 hover:text-white transition-colors uppercase tracking-widest hidden sm:block">Explorar</a>
+              </div>
+              ` : ''}
             </div>
-            <div id="anime-grid" class="flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x">
-              <div class="text-center text-omni-textMuted py-12 w-full animate-pulse">Cargando anime...</div>
+            <div class="relative">
+              <div id="anime-grid" class="${path === '/' ? 'flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x scroll-smooth hide-scrollbar' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-6 pt-4'}">
+                <div class="text-center text-omni-textMuted py-12 w-full animate-pulse col-span-full">Cargando anime...</div>
+              </div>
             </div>
           </section>` : ''}
 
           ${showManga ? `
           <section class="relative z-10 mb-16 animate-fade-in">
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
                 <div class="w-2 h-8 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.8)]"></div>
                 Mangas & Manhwas Populares
               </h2>
-              <a href="#" class="text-sm font-bold text-orange-500 hover:text-white transition-colors uppercase tracking-widest">Explorar</a>
+              ${path === '/' ? `
+              <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                  <button id="left-btn-manga" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-orange-500/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <button id="right-btn-manga" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:border-orange-500/50 flex items-center justify-center text-white transition-colors border border-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+                <a href="/manga" data-nav-link="true" class="text-sm font-bold text-orange-500 hover:text-white transition-colors uppercase tracking-widest hidden sm:block">Explorar</a>
+              </div>
+              ` : ''}
             </div>
-            <div id="manga-grid" class="flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x">
-              <div class="text-center text-omni-textMuted py-12 w-full animate-pulse">Cargando manga...</div>
+            <div class="relative">
+              <div id="manga-grid" class="${path === '/' ? 'flex gap-6 overflow-x-auto pb-8 pt-4 px-2 -mx-2 snap-x scroll-smooth hide-scrollbar' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-6 pt-4'}">
+                <div class="text-center text-omni-textMuted py-12 w-full animate-pulse col-span-full">Cargando manga...</div>
+              </div>
             </div>
           </section>` : ''}
         </main>
@@ -104,9 +187,32 @@ export class LibraryHub {
     `;
   }
 
+  private setupScroll(idPrefix: string) {
+    const grid = document.getElementById(`${idPrefix}-grid`);
+    const leftBtn = document.getElementById(`left-btn-${idPrefix}`);
+    const rightBtn = document.getElementById(`right-btn-${idPrefix}`);
+
+    if (grid && leftBtn && rightBtn) {
+      leftBtn.addEventListener('click', () => {
+        grid.scrollBy({ left: -window.innerWidth * 0.6, behavior: 'smooth' });
+      });
+      rightBtn.addEventListener('click', () => {
+        grid.scrollBy({ left: window.innerWidth * 0.6, behavior: 'smooth' });
+      });
+    }
+  }
+
   afterRender() {
     navbar.afterRender();
     this.loadContent();
+    
+    setTimeout(() => {
+      this.setupScroll('movies');
+      this.setupScroll('series');
+      this.setupScroll('games');
+      this.setupScroll('anime');
+      this.setupScroll('manga');
+    }, 100);
   }
 
   private async loadContent() {
@@ -114,10 +220,12 @@ export class LibraryHub {
       const path = window.location.pathname;
       const promises = [];
       
-      if (path === '/' || path === '/movies' || path === '/series') {
+      if (path === '/' || path === '/movies') {
         promises.push(mediaService.getTrendingMovies().then(res => this.renderRow('movies-grid', res)));
-      } else {
-        promises.push(Promise.resolve());
+      }
+      
+      if (path === '/' || path === '/series') {
+        promises.push(mediaService.getTrendingSeries().then(res => this.renderRow('series-grid', res)));
       }
 
       if (path === '/' || path === '/games') {

@@ -35,7 +35,7 @@ export class LoginView {
           </form>
           
           <div class="mt-8 text-center text-[10px] text-omni-textMuted/40 uppercase tracking-widest relative z-10">
-            Nexus de entretenimiento clasificado.
+            Plataforma de entretenimiento.
           </div>
         </div>
       </div>

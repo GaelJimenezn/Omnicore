@@ -30,6 +30,7 @@ export interface MediaDetails {
   runtime?: string;
   genre?: string;
   logo?: string;
+  overview?: string;
 }
 
 /**
@@ -70,6 +71,31 @@ export class MediaService {
       type: 'movie',
       rating: m.vote_average,
       year: m.release_date ? m.release_date.split('-')[0] : ''
+    }));
+  }
+
+  /**
+   * Fetches trending TV series from TMDB.
+   * @returns {Promise<MediaItem[]>} List of trending series.
+   */
+  async getTrendingSeries(): Promise<MediaItem[]> {
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    if (!apiKey) throw new Error('No TMDB API Key');
+
+    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${apiKey}&language=es-MX`);
+    const data = await res.json();
+    
+    if (!data.results) return [];
+
+    return data.results.map((s: any) => ({
+      id: s.id,
+      title: s.name || s.original_name,
+      poster: s.poster_path ? `https://image.tmdb.org/t/p/w500${s.poster_path}` : '',
+      backdrop: s.backdrop_path ? `https://image.tmdb.org/t/p/original${s.backdrop_path}` : '',
+      overview: s.overview,
+      type: 'series',
+      rating: s.vote_average,
+      year: s.first_air_date ? s.first_air_date.split('-')[0] : ''
     }));
   }
 
@@ -120,7 +146,7 @@ export class MediaService {
     if (!apiKey) return null;
 
     try {
-      const searchRes = await fetch(`https://www.steamgriddb.com/api/v2/search/autocomplete/${encodeURIComponent(gameName)}`, {
+      const searchRes = await fetch(`/steamgriddb-api/search/autocomplete/${encodeURIComponent(gameName)}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const searchData = await searchRes.json();
@@ -128,13 +154,23 @@ export class MediaService {
 
       const gameId = searchData.data[0].id;
 
-      const gridRes = await fetch(`https://www.steamgriddb.com/api/v2/grids/game/${gameId}?dimensions=600x900`, {
+      // Use exact parameters typical for Playnite to ensure covers
+      const gridRes = await fetch(`/steamgriddb-api/grids/game/${gameId}?dimensions=600x900,342x482,460x215&styles=alternate,official,material,white_logo,no_logo`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const gridData = await gridRes.json();
-      const poster = gridData.success && gridData.data.length > 0 ? gridData.data[0].url : null;
+      let poster = null;
+      if (gridData.success && gridData.data.length > 0) {
+        // Prioritize standard vertical grids 600x900, then by upvotes
+        const gridsToUse = gridData.data.sort((a: any, b: any) => {
+          if (a.width === 600 && b.width !== 600) return -1;
+          if (a.width !== 600 && b.width === 600) return 1;
+          return (b.upvotes || 0) - (a.upvotes || 0);
+        });
+        poster = gridsToUse[0].url;
+      }
 
-      const logoRes = await fetch(`https://www.steamgriddb.com/api/v2/logos/game/${gameId}`, {
+      const logoRes = await fetch(`/steamgriddb-api/logos/game/${gameId}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const logoData = await logoRes.json();
@@ -224,12 +260,13 @@ export class MediaService {
     let runtime = '';
     let genre = '';
     let logo = '';
+    let overview = '';
 
-    if (type === 'movie' || type === 'tv' || type === 'anime') {
+    if (type === 'movie' || type === 'tv' || type === 'series' || type === 'anime') {
       const apiKey = import.meta.env.VITE_TMDB_API_KEY;
       if (!apiKey) return { cast, providers, runtime, genre, logo };
       
-      const tmdbType = type === 'anime' ? 'tv' : type;
+      const tmdbType = (type === 'anime' || type === 'series') ? 'tv' : type;
 
       try {
         const res = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${id}?api_key=${apiKey}&language=es-MX&append_to_response=credits,watch/providers,images&include_image_language=en,null,es`);
@@ -268,6 +305,10 @@ export class MediaService {
         if (data.images && data.images.logos && data.images.logos.length > 0) {
           logo = `https://image.tmdb.org/t/p/w500${data.images.logos[0].file_path}`;
         }
+        
+        if (data.overview) {
+          overview = data.overview;
+        }
       } catch (e) {
         console.error(e);
       }
@@ -279,6 +320,7 @@ export class MediaService {
         
         if (data.playtime) runtime = `${data.playtime} h promedio`;
         if (data.genres && data.genres.length > 0) genre = data.genres[0].name;
+        if (data.description_raw) overview = data.description_raw;
         
         if (data.name) {
            const sgd = await this.getSteamGridData(data.name);
@@ -291,7 +333,7 @@ export class MediaService {
       }
     }
 
-    return { cast, providers, runtime, genre, logo };
+    return { cast, providers, runtime, genre, logo, overview };
   }
 }
 

@@ -122,14 +122,16 @@ export class MediaService {
       year: g.released ? g.released.split('-')[0] : ''
     }));
 
-    // Fetch SteamGridDB parallel
-    await Promise.all(games.map(async (g) => {
+    // Fetch SteamGridDB sequentially to prevent 429 Too Many Requests rate limit
+    for (const g of games) {
+      // Add a tiny delay to be safe
+      await new Promise(r => setTimeout(r, 100));
       const sgd = await this.getSteamGridData(g.title);
       if (sgd) {
         if (sgd.poster) g.poster = sgd.poster;
         if (sgd.logo) g.logo = sgd.logo;
       }
-    }));
+    }
 
     return games;
   }

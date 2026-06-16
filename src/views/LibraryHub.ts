@@ -220,16 +220,27 @@ export class LibraryHub {
       const path = window.location.pathname;
       const promises = [];
       
+      let firstLoaded = false;
+
       if (path === '/' || path === '/movies') {
-        promises.push(mediaService.getTrendingMovies().then(res => this.renderRow('movies-grid', res)));
+        promises.push(mediaService.getTrendingMovies().then(res => {
+          this.renderRow('movies-grid', res);
+          if (res.length > 0 && !firstLoaded) { heroSection.update(res[0]); firstLoaded = true; }
+        }));
       }
       
       if (path === '/' || path === '/series') {
-        promises.push(mediaService.getTrendingSeries().then(res => this.renderRow('series-grid', res)));
+        promises.push(mediaService.getTrendingSeries().then(res => {
+          this.renderRow('series-grid', res);
+          if (res.length > 0 && !firstLoaded) { heroSection.update(res[0]); firstLoaded = true; }
+        }));
       }
 
       if (path === '/' || path === '/games') {
-        promises.push(mediaService.getTrendingGames().then(res => this.renderRow('games-grid', res)));
+        promises.push(mediaService.getTrendingGames().then(res => {
+          this.renderRow('games-grid', res);
+          if (res.length > 0 && !firstLoaded) { heroSection.update(res[0]); firstLoaded = true; }
+        }));
       } else {
         promises.push(Promise.resolve());
       }

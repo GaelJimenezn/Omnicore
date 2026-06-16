@@ -1,28 +1,28 @@
 import heroImg from '../assets/hero.png';
+import { type MediaItem } from '../services/MediaService';
 
 export class HeroSection {
-  render(path: string = '/') {
-    const isGames = path === '/games';
-    const isSeries = path === '/series';
-    
-    let bgUrl = 'https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtec8Oobm7sS.jpg'; // Movie default (Godzilla)
-    let title = 'Godzilla Minus One';
-    let description = 'Japón, devastado tras la guerra, se enfrenta a una nueva amenaza en forma de Godzilla. ¿Cómo sobrevivirá la población a esta crisis sin precedentes?';
+  private containerId = 'hero-section-container';
 
-    if (isGames) {
-      bgUrl = 'https://image.api.playstation.com/vulcan/ap/rnd/202010/0222/b3b19280145c11d29faec5087e6fa50e93cd1e309207e602.jpg';
-      title = 'Cyberpunk 2077';
-      description = 'Entra en el inmenso mundo abierto de Night City, una megalópolis obsesionada con el poder, el glamur y la modificación corporal. Conviértete en un mercenario cyberpunk y construye tu leyenda.';
-    } else if (isSeries) {
-      bgUrl = 'https://image.tmdb.org/t/p/original/56v2KjBlU4XaOv9rVYEQypROD7P.jpg'; // Stranger Things
-      title = 'Stranger Things';
-      description = 'A raíz de la desaparición de un niño, un pueblo desvela un misterio relacionado con experimentos secretos, fuerzas sobrenaturales aterradoras y una niña muy extraña.';
-    }
+  render(_path: string = '/') {
+    return `<div id="${this.containerId}" class="w-full h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden mb-12 bg-omni-panel/50 animate-pulse border border-white/5 shadow-2xl relative">
+      <div class="absolute inset-0 flex items-center justify-center text-omni-textMuted">Cargando portada...</div>
+    </div>`;
+  }
+
+  update(item: MediaItem) {
+    const container = document.getElementById(this.containerId);
+    if (!container) return;
+
+    const bgUrl = item.backdrop || item.poster || heroImg;
+    const title = item.title;
+    const description = item.overview || 'Sin descripción disponible.';
+    const isGames = item.type === 'game';
 
     const accentClass = isGames ? 'text-omni-secondary border-omni-secondary/30 bg-omni-secondary/20 shadow-[0_0_10px_rgba(112,0,255,0.2)]' : 'text-omni-accent border-omni-accent/30 bg-omni-accent/20 shadow-[0_0_10px_rgba(0,240,255,0.2)]';
 
-    return `
-      <div class="relative w-full h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden mb-12 animate-fade-in group shadow-[0_0_40px_rgba(0,0,0,0.5)] bg-omni-panel">
+    container.innerHTML = `
+      <div class="relative w-full h-full group">
         <!-- Hero Background -->
         <div class="absolute inset-0">
           <img src="${bgUrl}" onerror="this.src='${heroImg}'" alt="Featured" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[10s] ease-out opacity-60 md:opacity-100" />
@@ -59,6 +59,8 @@ export class HeroSection {
         </div>
       </div>
     `;
+    
+    container.classList.remove('animate-pulse');
   }
 }
 

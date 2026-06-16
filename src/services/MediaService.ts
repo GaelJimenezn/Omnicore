@@ -156,20 +156,26 @@ export class MediaService {
 
       const gameId = searchData.data[0].id;
 
-      // Use exact parameters typical for Playnite to ensure covers
-      const gridRes = await fetch(`/steamgriddb-api/grids/game/${gameId}?dimensions=600x900,342x482,460x215&styles=alternate,official,material,white_logo,no_logo`, {
+      // Fetch ALL grids without API filters, because SteamGridDB API v2 fails if you provide multiple comma-separated dimensions.
+      const gridRes = await fetch(`/steamgriddb-api/grids/game/${gameId}`, {
         headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       const gridData = await gridRes.json();
       let poster = null;
       if (gridData.success && gridData.data.length > 0) {
-        // Prioritize standard vertical grids 600x900, then by upvotes
-        const gridsToUse = gridData.data.sort((a: any, b: any) => {
-          if (a.width === 600 && b.width !== 600) return -1;
-          if (a.width !== 600 && b.width === 600) return 1;
-          return (b.upvotes || 0) - (a.upvotes || 0);
-        });
-        poster = gridsToUse[0].url;
+        // Filter out non-vertical grids, then prioritize 600x900, then sort by upvotes
+        const validGrids = gridData.data.filter((g: any) => g.width < g.height); // only vertical
+        if (validGrids.length > 0) {
+          const gridsToUse = validGrids.sort((a: any, b: any) => {
+            if (a.width === 600 && b.width !== 600) return -1;
+            if (a.width !== 600 && b.width === 600) return 1;
+            return (b.upvotes || 0) - (a.upvotes || 0);
+          });
+          poster = gridsToUse[0].url;
+        } else {
+          // Fallback if absolutely no vertical grids exist
+          poster = gridData.data[0].url;
+        }
       }
 
       const logoRes = await fetch(`/steamgriddb-api/logos/game/${gameId}`, {

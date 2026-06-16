@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 
 async function test() {
   const steamGridApiKey = 'f79ec99f279eb51e27139b56833ff0f4';
